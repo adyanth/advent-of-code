@@ -19,6 +19,16 @@
             "problemMatcher": [],
         },
         {
+            "label": "Run specific AOC",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "type": "shell",
+            "command": "cargo aoc -d ${input:day}",
+            "problemMatcher": [],
+        },
+        {
             "label": "Benchmark AOC",
             "type": "shell",
             "command": "cargo aoc bench",
