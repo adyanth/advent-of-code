@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": true
+    },
+    "tasks": [
+        {
+            "label": "Run AOC",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "type": "shell",
+            "command": "cargo aoc"
+        },
+        {
+            "label": "Benchmark AOC",
+            "type": "shell",
+            "command": "cargo aoc bench",
+        }
+    ]
+}
