@@ -15,12 +15,27 @@
                 "isDefault": true
             },
             "type": "shell",
-            "command": "cargo aoc"
+            "command": "cargo aoc",
+            "problemMatcher": [],
         },
         {
             "label": "Benchmark AOC",
             "type": "shell",
             "command": "cargo aoc bench",
+            "problemMatcher": [],
+        },
+        {
+            "label": "Download input",
+            "type": "shell",
+            "command": "cargo aoc input -d ${input:day} -y ${config:year}",
+            "problemMatcher": [],
+        },
+    ],
+    "inputs": [
+        {
+            "id": "day",
+            "type": "promptString",
+            "description": "Which day of AOC 2015?"
         }
     ]
 }
