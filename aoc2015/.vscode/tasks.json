@@ -35,7 +35,8 @@
         {
             "id": "day",
             "type": "promptString",
-            "description": "Which day of AOC 2015?"
+            "description": "Which day?",
+            "default": "1",
         }
     ]
 }
