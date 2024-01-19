@@ -29,3 +29,18 @@ pub fn part1(input: &[u8]) -> usize {
     }
     houses.len()
 }
+
+#[aoc(day3, part2)]
+pub fn part2(input: &[u8]) -> usize {
+    let mut santa = Coord{x: 0, y: 0};
+    let mut robo = Coord{x: 0, y: 0};
+    let mut houses = HashSet::new();
+    houses.insert(santa.clone());
+    for is in input.chunks_exact(2) {
+        santa += &is[0];
+        houses.insert(santa.clone());
+        robo += &is[1];
+        houses.insert(robo.clone());
+    }
+    houses.len()
+}
