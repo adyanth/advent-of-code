@@ -18,8 +18,8 @@ impl ops::AddAssign<&u8> for Coord {
     }
 }
 
-#[aoc(day3, part1)]
-pub fn part1(input: &[u8]) -> usize {
+#[aoc(day3, part1, hash)]
+pub fn part1_hash(input: &[u8]) -> usize {
     let mut pos = Coord{x: 0, y: 0};
     let mut houses = HashSet::new();
     houses.insert(pos.clone());
@@ -43,4 +43,25 @@ pub fn part2(input: &[u8]) -> usize {
         houses.insert(robo.clone());
     }
     houses.len()
+}
+
+#[aoc(day3, part1, array)]
+pub fn part1_array(input: &[u8]) -> u16 {
+    const SIZE: usize = 255;
+    let mut houses = [false; SIZE * SIZE];
+    let mut pos:usize = (SIZE - 1) / 2 * (SIZE + 1);
+    let mut visited: u16 = 1;
+    houses[pos] = true;
+    for i in input {
+        pos = match i {
+            b'^' => pos - 128,
+            b'v' => pos + 128,
+            b'<' => pos - 1,
+            b'>' => pos + 1,
+            _ => unreachable!()
+        };
+        visited += !houses[pos] as u16;
+        houses[pos] = true;
+    }
+    visited
 }
