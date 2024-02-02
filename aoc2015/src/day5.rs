@@ -34,6 +34,26 @@ pub fn part1(input: &str) -> u16 {
     input.lines().map(is_nice_part1).sum()
 }
 
+#[aoc(day5, part1, looper)]
+pub fn part1_looper(input: &str) -> u16 {
+    let mut nices = 0;
+    for input in input.lines() {
+        let mut nice = false;
+        let mut notnice = false;
+        let mut input = input.as_bytes().iter();
+        let mut prev: &u8 = input.next().unwrap();
+        let mut vcount: u8 = is_vowel(prev) as u8;
+        for c in input {
+            vcount += is_vowel(c) as u8;
+            nice = nice || prev == c;
+            notnice = notnice || notnice_check(prev, c);
+            prev = c;
+        }
+        nices += (nice && !notnice && vcount >= 3) as u16;
+    }
+    nices
+}
+
 // (..).*\1 && (.).\1
 fn is_nice_part2(input: &str) -> u16 {
     let mut doubles = HashMap::new();
