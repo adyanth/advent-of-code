@@ -47,15 +47,16 @@ pub fn part2(input: &[u8]) -> usize {
 
 #[aoc(day3, part1, array)]
 pub fn part1_array(input: &[u8]) -> u16 {
-    const SIZE: usize = 255;
-    let mut houses = [false; SIZE * SIZE];
-    let mut pos:usize = (SIZE - 1) / 2 * (SIZE + 1);
+    const XSIZE: usize = 180;
+    const YSIZE: usize = 164;
+    let mut houses = [false; XSIZE * YSIZE];
+    let mut pos:usize = (YSIZE - 2) / 2 * YSIZE + (XSIZE - 2) / 2;
     let mut visited: u16 = 1;
     houses[pos] = true;
     for i in input {
         pos = match i {
-            b'^' => pos - 128,
-            b'v' => pos + 128,
+            b'^' => pos - XSIZE,
+            b'v' => pos + XSIZE,
             b'<' => pos - 1,
             b'>' => pos + 1,
             _ => unreachable!()
