@@ -2,8 +2,8 @@ use std::fmt::{Display, Error, Formatter};
 
 #[derive(Debug)]
 pub struct Coord {
-    x: i32,
-    y: i32,
+    x: usize,
+    y: usize,
 }
 
 impl Display for Coord {
@@ -59,7 +59,7 @@ fn parse_line(line: &str) -> Instr {
     let to = parse_pair(tokens.next().unwrap());
     tokens.next();
     let from = parse_pair(tokens.next().unwrap());
-    Instr{
+    Instr {
         from: from,
         to: to,
         action: match tokens.next().unwrap() {
@@ -67,7 +67,7 @@ fn parse_line(line: &str) -> Instr {
             "off" => Action::TurnOff,
             "on" => Action::TurnOn,
             _ => unreachable!(),
-        }
+        },
     }
 }
 
@@ -76,9 +76,54 @@ pub fn parse(input: &str) -> Vec<Instr> {
     input.lines().map(parse_line).collect()
 }
 
-#[aoc(day6, part1)]
-pub fn part1(instrs: &[Instr]) -> i64 {
-    0
+struct State {
+    grid: [[bool; 1000]; 1000],
+}
+
+impl State {
+    fn count(&self) -> usize {
+        self.grid
+            .iter()
+            .map(|e| e.iter().filter(|b| **b).count())
+            .sum()
+    }
+
+    fn set(&mut self, from: &Coord, to: &Coord, value: bool) -> &mut State {
+        for i in from.x..=to.x {
+            for j in from.y..=to.y {
+                self.grid[i][j] = value;
+            }
+        }
+        self
+    }
+
+    fn toggle(&mut self, from: &Coord, to: &Coord) -> &mut State {
+        for i in from.x..=to.x {
+            for j in from.y..=to.y {
+                self.grid[i][j] = !self.grid[i][j];
+            }
+        }
+        self
+    }
+
+    fn apply(&mut self, i: &Instr) -> &mut State {
+        match i.action {
+            Action::TurnOn => self.set(&i.from, &i.to, true),
+            Action::TurnOff => self.set(&i.from, &i.to, false),
+            Action::Toggle => self.toggle(&i.from, &i.to),
+        }
+    }
+}
+
+#[aoc(day6, part1, naive)]
+pub fn part1_naive(instrs: &[Instr]) -> usize {
+    let mut state = State {
+        grid: [[false; 1000]; 1000],
+    };
+    for i in instrs {
+        state.apply(i);
+    }
+    state.count()
 }
 
 #[cfg(test)]
@@ -92,5 +137,15 @@ mod tests {
             parse("turn off 0,998 through 999,999")[0].to_string(),
             "TurnOf from (0, 998) to (999, 999)"
         );
+    }
+
+    #[test]
+    fn test_naive() {
+        let i1 = Instr {
+            from: Coord { x: 0, y: 0 },
+            to: Coord { x: 9, y: 9 },
+            action: Action::TurnOn,
+        };
+        assert_eq!(part1_naive(&[i1]), 100);
     }
 }
