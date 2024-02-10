@@ -1,4 +1,4 @@
-use std::collections::{HashMap};
+use std::collections::HashMap;
 
 fn is_vowel(c: &u8) -> bool {
     match *c as char {
@@ -8,10 +8,11 @@ fn is_vowel(c: &u8) -> bool {
 }
 
 fn notnice_check(p: &u8, c: &u8) -> bool {
-    c - p == 1 && match *p as char {
-        'a' | 'c' | 'p' | 'x' => true,
-        _ => false,
-    }
+    c - p == 1
+        && match *p as char {
+            'a' | 'c' | 'p' | 'x' => true,
+            _ => false,
+        }
 }
 
 fn is_nice_part1(input: &str) -> u16 {
@@ -54,7 +55,7 @@ pub fn part1_looper(input: &str) -> u16 {
     nices
 }
 
-// (..).*\1 && (.).\1
+// cat input/2015/day5.txt | grep -E '(..).*\1' | grep -E '(.).\1' | wc -l
 fn is_nice_part2(input: &str) -> u16 {
     let mut doubles = HashMap::new();
     let mut cond1 = false;
@@ -64,7 +65,7 @@ fn is_nice_part2(input: &str) -> u16 {
     doubles.insert(couple, 1);
 
     for i in 2..input.len() {
-        let couple = &input[i-1..=i];
+        let couple = &input[i - 1..=i];
         if !cond1 {
             match doubles.get(couple) {
                 Some(x) => cond1 = i - x > 1,
@@ -72,7 +73,7 @@ fn is_nice_part2(input: &str) -> u16 {
             }
         }
         if !cond2 {
-            cond2 = couple.as_bytes()[0] == couple.as_bytes()[1];
+            cond2 = &input[i - 2..=i - 2] == &input[i..=i];
         }
     }
     (cond1 && cond2) as u16
