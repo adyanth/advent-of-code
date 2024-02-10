@@ -77,21 +77,22 @@ pub fn parse(input: &str) -> Vec<Instr> {
 }
 
 struct State {
-    grid: [[bool; 1000]; 1000],
+    grid: [[usize; 1000]; 1000],
 }
 
 impl State {
     fn count(&self) -> usize {
-        self.grid
-            .iter()
-            .map(|e| e.iter().filter(|b| **b).count())
-            .sum()
+        self.grid.iter().map(|e| e.iter().sum::<usize>()).sum()
     }
 
-    fn set(&mut self, from: &Coord, to: &Coord, value: bool) -> &mut State {
+    fn set(&mut self, from: &Coord, to: &Coord, value: usize) -> &mut State {
         for i in from.x..=to.x {
             for j in from.y..=to.y {
-                self.grid[i][j] = value;
+                if value != 0 {
+                    self.grid[i][j] += value;
+                } else if self.grid[i][j] > 0 {
+                    self.grid[i][j] -= 1;
+                }
             }
         }
         self
@@ -106,11 +107,19 @@ impl State {
         self
     }
 
-    fn apply(&mut self, i: &Instr) -> &mut State {
+    fn apply_part1(&mut self, i: &Instr) -> &mut State {
         match i.action {
-            Action::TurnOn => self.set(&i.from, &i.to, true),
-            Action::TurnOff => self.set(&i.from, &i.to, false),
+            Action::TurnOn => self.set(&i.from, &i.to, 1),
+            Action::TurnOff => self.set(&i.from, &i.to, 0),
             Action::Toggle => self.toggle(&i.from, &i.to),
+        }
+    }
+
+    fn apply_part2(&mut self, i: &Instr) -> &mut State {
+        match i.action {
+            Action::TurnOn => self.set(&i.from, &i.to, 1),
+            Action::TurnOff => self.set(&i.from, &i.to, 0),
+            Action::Toggle => self.set(&i.from, &i.to, 2),
         }
     }
 }
@@ -118,10 +127,21 @@ impl State {
 #[aoc(day6, part1, naive)]
 pub fn part1_naive(instrs: &[Instr]) -> usize {
     let mut state = State {
-        grid: [[false; 1000]; 1000],
+        grid: [[0; 1000]; 1000],
     };
     for i in instrs {
-        state.apply(i);
+        state.apply_part1(i);
+    }
+    state.count()
+}
+
+#[aoc(day6, part2, naive)]
+pub fn part2_naive(instrs: &[Instr]) -> usize {
+    let mut state = State {
+        grid: [[0; 1000]; 1000],
+    };
+    for i in instrs {
+        state.apply_part2(i);
     }
     state.count()
 }
