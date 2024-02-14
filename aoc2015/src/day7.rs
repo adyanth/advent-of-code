@@ -128,6 +128,14 @@ pub fn part1(context: &Context) -> u16 {
     solve_for(&mut context.clone(), "a")
 }
 
+#[aoc(day7, part2)]
+pub fn part2(context: &Context) -> u16 {
+    let a = solve_for(&mut context.clone(), "a");
+    let mut context = context.clone();
+    context.cache.insert("b".to_string(), a);
+    solve_for(&mut context, "a")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
