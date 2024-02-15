@@ -96,6 +96,10 @@ fn shortest_path(graph: &Vec<Vec<Edge>>) -> usize {
     while let Some(State { node, mask }) = heap.pop() {
         for neighbor in &graph[node] {
             let add = neighbor.cost;
+            if mask & 1 << neighbor.node != 0 {
+                // Visited
+                continue;
+            }
             let neighbor_mask = mask | (1 << neighbor.node);
             if dists[neighbor.node][neighbor_mask]
                 > dists[node][mask].checked_add(add).unwrap_or(usize::MAX)
