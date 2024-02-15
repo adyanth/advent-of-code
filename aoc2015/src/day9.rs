@@ -50,17 +50,12 @@ pub fn generate(input: &str) -> Vec<Vec<Edge>> {
     graph
 }
 
+// Min Heap Dijkstra from https://doc.rust-lang.org/std/collections/binary_heap/index.html
+
 #[derive(Copy, Clone, Eq, PartialEq)]
 struct State {
     node: usize,
     mask: usize,
-}
-
-// `PartialOrd` needs to be implemented as well.
-impl PartialOrd for State {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
 }
 
 // The priority queue depends on `Ord`.
@@ -77,10 +72,21 @@ impl Ord for State {
     }
 }
 
-fn shortest_path(graph: &Vec<Vec<Edge>>) -> usize {
+// `PartialOrd` needs to be implemented as well.
+impl PartialOrd for State {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+// Modified Dijkstra from https://www.baeldung.com/cs/shortest-path-visiting-all-nodes
+// Does not account visit only once
+
+// init = 0 => max path, init = usize::MAX => min math
+fn path(graph: &Vec<Vec<Edge>>, init: usize) -> usize {
     let n = graph.len();
     let mut dists: Vec<Vec<usize>> = (0..n)
-        .map(|_| (0..(1 << n)).map(|_| usize::MAX).collect())
+        .map(|_| (0..(1 << n)).map(|_| init).collect())
         .collect();
 
     let mut heap = BinaryHeap::new();
@@ -101,8 +107,9 @@ fn shortest_path(graph: &Vec<Vec<Edge>>) -> usize {
                 continue;
             }
             let neighbor_mask = mask | (1 << neighbor.node);
-            if dists[neighbor.node][neighbor_mask]
-                > dists[node][mask].checked_add(add).unwrap_or(usize::MAX)
+            if (init == 0)
+                == (dists[neighbor.node][neighbor_mask]
+                    < dists[node][mask].checked_add(add).unwrap_or(usize::MAX))
             {
                 heap.push(State {
                     node: neighbor.node,
@@ -113,12 +120,22 @@ fn shortest_path(graph: &Vec<Vec<Edge>>) -> usize {
         }
     }
 
-    dists.iter().map(|v| v[(1 << n) - 1]).min().unwrap()
+    let iter = dists.iter().map(|v| v[(1 << n) - 1]);
+    if init == 0 {
+        iter.max().unwrap()
+    } else {
+        iter.min().unwrap()
+    }
 }
 
 #[aoc(day9, part1)]
 pub fn part1(graph: &Vec<Vec<Edge>>) -> usize {
-    shortest_path(graph)
+    path(graph, usize::MAX)
+}
+
+#[aoc(day9, part2)]
+pub fn part2(graph: &Vec<Vec<Edge>>) -> usize {
+    path(graph, 0)
 }
 
 #[cfg(test)]
