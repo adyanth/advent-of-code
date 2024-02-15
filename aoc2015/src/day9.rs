@@ -52,7 +52,7 @@ pub fn generate(input: &str) -> Vec<Vec<Edge>> {
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 struct State {
-    child: usize,
+    node: usize,
     mask: usize,
 }
 
@@ -71,53 +71,45 @@ impl Ord for State {
         // Notice that the we flip the ordering on costs.
         // In case of a tie we compare positions - this step is necessary
         // to make implementations of `PartialEq` and `Ord` consistent.
-        other
-            .mask
-            .cmp(&self.mask)
-            .then_with(|| self.child.cmp(&other.child))
+        self.node
+            .cmp(&other.node)
+            .then_with(|| self.mask.cmp(&other.mask))
     }
 }
 
 fn shortest_path(graph: &Vec<Vec<Edge>>) -> usize {
-    let mut cost: Vec<Vec<usize>> = (0..graph.len())
-        .map(|_| (0..(1 << graph.len())).map(|_| usize::MAX).collect())
+    let n = graph.len();
+    let mut dists: Vec<Vec<usize>> = (0..n)
+        .map(|_| (0..(1 << n)).map(|_| usize::MAX).collect())
         .collect();
 
     let mut heap = BinaryHeap::new();
 
-    for node in 0..graph.len() {
+    for node in 0..n {
         heap.push(State {
-            child: node,
+            node: node,
             mask: 1 << node,
         });
-        cost[node][1 << node] = 0;
+        dists[node][1 << node] = 0;
     }
 
-    while let Some(State { child, mask, .. }) = heap.pop() {
-        let current = child;
-        for child in &graph[child] {
-            let add = child.cost;
-            if cost[child.node][mask | (1 << child.node)]
-                > cost[current][mask].checked_add(add).unwrap_or(usize::MAX)
+    while let Some(State { node, mask }) = heap.pop() {
+        for neighbor in &graph[node] {
+            let add = neighbor.cost;
+            let neighbor_mask = mask | (1 << neighbor.node);
+            if dists[neighbor.node][neighbor_mask]
+                > dists[node][mask].checked_add(add).unwrap_or(usize::MAX)
             {
                 heap.push(State {
-                    child: child.node,
-                    mask: mask | (1 << child.node),
+                    node: neighbor.node,
+                    mask: neighbor_mask,
                 });
-                cost[child.node][mask | (1 << child.node)] = cost[current][mask] + add;
+                dists[neighbor.node][neighbor_mask] = dists[node][mask] + add;
             }
         }
     }
 
-    // let mut answer = usize::MAX;
-    // for node in 0..graph.len() {
-    //     answer = answer.min(cost[node][(1 << graph.len()) - 1]);
-    // }
-    // answer
-    cost.iter()
-        .map(|v| v[(1 << graph.len()) - 1])
-        .min()
-        .unwrap()
+    dists.iter().map(|v| v[(1 << n) - 1]).min().unwrap()
 }
 
 #[aoc(day9, part1)]
