@@ -191,7 +191,7 @@ mod tests {
                     Edge { node: 2, cost: 100 }
                 ],
             ]),
-            22
+            111
         );
     }
 }
