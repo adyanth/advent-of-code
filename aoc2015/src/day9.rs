@@ -9,38 +9,43 @@ pub struct Edge {
 #[aoc_generator(day9)]
 pub fn generate(input: &str) -> Vec<Vec<Edge>> {
     let mut mapping = HashMap::new();
-    let mut graph = vec![vec![]];
     for line in input.lines() {
         let mut tokens = line.split(" ");
         let from = tokens.next().unwrap();
-        tokens.next().unwrap();
+        if !mapping.contains_key(from) {
+            mapping.insert(from.to_string(), mapping.len());
+        }
+        tokens.next();
         let to = tokens.next().unwrap();
+        if !mapping.contains_key(to) {
+            mapping.insert(to.to_string(), mapping.len());
+        }
+    }
+
+    let mut graph: Vec<Vec<Edge>> = (0..mapping.len())
+        .enumerate()
+        .map(|(i, _)| {
+            (0..mapping.len())
+                .map(|_| Edge { node: i, cost: 0 })
+                .collect()
+        })
+        .collect();
+
+    for line in input.lines() {
+        let mut tokens = line.split(" ");
+        let from = *mapping.get(tokens.next().unwrap()).unwrap();
+        tokens.next().unwrap();
+        let to = *mapping.get(tokens.next().unwrap()).unwrap();
         let dist = tokens.last().unwrap().parse::<usize>().unwrap();
 
-        let from = if mapping.contains_key(from) {
-            *mapping.get(from).unwrap()
-        } else {
-            mapping.insert(from.to_string(), mapping.len());
-            graph.push(vec![]);
-            mapping.len() - 1
-        };
-
-        let to = if mapping.contains_key(to) {
-            *mapping.get(to).unwrap()
-        } else {
-            mapping.insert(to.to_string(), mapping.len());
-            graph.push(vec![]);
-            mapping.len() - 1
-        };
-
-        graph[from].push(Edge {
+        graph[from][to] = Edge {
             node: to,
             cost: dist,
-        });
-        graph[to].push(Edge {
+        };
+        graph[to][from] = Edge {
             node: from,
             cost: dist,
-        });
+        };
     }
     graph
 }
