@@ -1,3 +1,5 @@
+use std::ops::Index;
+
 fn count(line: &str) -> usize {
     let res = 2 + line
         .to_ascii_lowercase()
@@ -16,14 +18,37 @@ fn strip(line: &str) -> &str {
     let mut chars = line.chars();
     chars.next();
     chars.next_back();
-    println!("Chars: `{:?}`", chars);
+    // println!("Chars: `{:?}`", chars);
     chars.as_str()
+}
+
+fn count_correct(line: &str) -> usize {
+    let bytes = line.as_bytes();
+    let mut i = 0;
+    let mut count = 2;
+    while i < bytes.len() {
+        if *bytes.index(i) == b'\\' {
+            match bytes.index(i+1) {
+                b'x' => {
+                    count += 3;
+                    i += 3;
+                },
+                b'"' | b'\\' => {
+                    count += 1;
+                    i += 1;
+                },
+                _ => unreachable!(),
+            }
+        }
+        i += 1;
+    }
+    count
 }
 
 #[aoc(day8, part1)]
 pub fn part1(input: &str) -> usize {
-    println!("Input: `{}`", input);
-    input.lines().map(strip).map(count).sum()
+    // println!("Input: `{}`", input);
+    input.lines().map(strip).map(count_correct).sum()
 }
 
 #[cfg(test)]
@@ -43,8 +68,7 @@ mod tests {
     fn test_all() {
         assert_eq!(
             part1(
-                r#"
-""
+                r#"""
 "abc"
 "aaa\"aaa"
 "\x27"
