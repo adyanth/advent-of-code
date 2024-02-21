@@ -1,6 +1,6 @@
 use std::ops::Index;
 
-fn count(line: &str) -> usize {
+fn _count(line: &str) -> usize {
     let res = 2 + line
         .to_ascii_lowercase()
         .chars()
