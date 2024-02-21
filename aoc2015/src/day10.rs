@@ -3,7 +3,8 @@ fn looksay_mapper(mut acc: (String, char, usize), c: char) -> (String, char, usi
         acc.2 += 1;
     } else {
         if acc.1 != ' ' {
-            acc.0.push_str(&format!("{}{}", acc.2, acc.1));
+            acc.0.push_str(&acc.2.to_string());
+            acc.0.push(acc.1);
         }
         acc.1 = c;
         acc.2 = 1
@@ -15,7 +16,9 @@ fn looksay(input: &str, count: usize) -> String {
     let mut output = input.to_string();
     for _ in 1..=count {
         let calc = output.chars().fold((String::new(), ' ', 0), looksay_mapper);
-        output = format!("{}{}{}", calc.0, calc.2, calc.1);
+        output = calc.0;
+        output.push_str(&calc.2.to_string());
+        output.push(calc.1);
     }
     output
 }
