@@ -62,13 +62,22 @@ fn part1_is_valid(input: &str) -> bool {
     c_abc && c_aabb >= 2
 }
 
-#[aoc(day11, part1)]
 fn part1_next_valid(input: &str) -> String {
     let mut next = part1_increment(input);
     while !part1_is_valid(&next) {
         next = part1_increment(&next);
     }
     next
+}
+
+#[aoc(day11, part1)]
+fn part1(input: &str) -> String {
+    part1_next_valid(input)
+}
+
+#[aoc(day11, part2)]
+fn part2(input: &str) -> String {
+    part1_next_valid(&part1_next_valid(input))
 }
 
 #[cfg(test)]
