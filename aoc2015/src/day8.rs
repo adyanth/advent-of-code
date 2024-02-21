@@ -51,6 +51,19 @@ pub fn part1(input: &str) -> usize {
     input.lines().map(strip).map(count_correct).sum()
 }
 
+fn count_part2(line: &str) -> usize {
+    2 + line.bytes().map(|c| match c {
+        b'"' | b'\\' => 1,
+        _ => 0,
+    }).sum::<usize>()
+}
+
+#[aoc(day8, part2)]
+pub fn part2(input: &str) -> usize {
+    // println!("Input: `{}`", input);
+    input.lines().map(count_part2).sum()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
