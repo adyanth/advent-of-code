@@ -38,6 +38,7 @@ dependencies = [
  "aoc-runner",
  "aoc-runner-derive",
  "md5",
+ "serde_json",
 ]
 
 [[package]]
