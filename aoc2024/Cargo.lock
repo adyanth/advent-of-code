@@ -60,6 +60,7 @@ dependencies = [
  "aoc-runner-derive",
  "criterion",
  "itertools 0.13.0",
+ "regex",
 ]
 
 [[package]]
